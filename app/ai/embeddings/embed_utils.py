@@ -1,5 +1,6 @@
 from app.models.job import Job
 from app.models.company import Company
+from app.models.user import User
 from langchain_huggingface import HuggingFaceEmbeddings
 from pathlib import Path
 from langchain_community.document_loaders import PyPDFLoader
@@ -10,8 +11,7 @@ def get_embed_model():
     return HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
 
 def build_job_embedding_content(job: Job, company: Company) -> str:
-    content=
-        f"""
+    content=f"""
             Job Title: {job.title}
             Company: {company.name}
             Location: {job.location or "Not specified"}
@@ -21,27 +21,25 @@ def build_job_embedding_content(job: Job, company: Company) -> str:
             Tags: {", ".join(job.tags)}
             Job Description: {job.description or ""}
         """
-        return content.strip()
+    return content.strip()
 
 def build_company_embedding_content(company: Company) -> str:
-    content=
-        f"""
+    content=f"""
             Company Name: {company.name}
             Domain: {company.domain}
             Location: {company.location}
             Company Size: {company.company_size}
             Description: {company.description}
         """
-        return content.strip()
+    return content.strip()
 
 def build_candidate_embedding_content(user: User, resume_txt) -> str:
-    content=
-        f"""
+    content=f"""
             Candidate Username: {user.user_name}
             Role: {user.role.value}
             Resume: {resume_text}
         """
-        return content.strip()
+    return content.strip()
 
 def load_document(file_path: str) -> str:
     """

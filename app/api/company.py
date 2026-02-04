@@ -15,6 +15,7 @@ from app.models.user import User
 from app.core.enum import UserRole
 from app.schemas.company import *
 from app.crud.company import *
+from app.ai.embeddings.embed_company import *
 
 router = APIRouter(prefix="/companies", tags=["Companies"]) # router instance for company APIs
 
@@ -29,6 +30,7 @@ def create_company_api(company: CompanyCreate, current_user: User = Depends(get_
             status_code=400,
             detail="Company already exists"
         )
+    embed_companies(session)
     return created_company
 
 # Retrive company through id, all users allowed to see companies
@@ -47,6 +49,7 @@ def update_company_api(company_id: UUID, company: CompanyUpdate, current_user: U
     updated_company = update_company(company_id, company, session) # sending new data to be put
     if not updated_company:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Company not found")
+    embed_companies(session)
     return updated_company
 
 # Compay Deletion enpoint, resticted to admin and recruiter.
@@ -57,6 +60,7 @@ def delete_company_api(company_id: UUID, current_user: User = Depends(get_curren
     success = delete_company(company_id, session)
     if not success:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Company not found")
+    embed_companies(session)
     return {
         "success_status": success
     }

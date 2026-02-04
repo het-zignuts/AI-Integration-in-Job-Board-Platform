@@ -16,6 +16,7 @@ from app.core.enum import UserRole
 from app.schemas.job import JobCreate, JobUpdate, JobResponse
 from app.crud.job import *
 from app.crud.company import *
+from app.ai.embeddings.embed_job import *
 
 router = APIRouter(prefix="/jobs", tags=["Jobs"]) # router creation for jobs APIs
 
@@ -28,6 +29,7 @@ def create_job_api(job: JobCreate, current_user: User = Depends(get_current_user
     if not company:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Company not found")
     created_job = create_job(job, company.id, session) # call to business logic for job creation
+    embed_jobs(session)
     return created_job
 
 # Job retrieval API by ID
@@ -76,6 +78,7 @@ def update_job_api(job_id: UUID, job: JobUpdate, current_user: User = Depends(ge
     if not company or current_job.company_id != company.id: # prevent other compnay's employee to update the job of this company
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Insufficient permissions to update this job")
     updated_job = update_job(job_id, job, session)
+    embed_jobs(session)
     return updated_job
 
 # job deletion endpoint.. for only recruiters and admin
@@ -92,6 +95,7 @@ def delete_job_api(job_id: UUID, current_user: User = Depends(get_current_user),
     success = delete_job(job_id, session) # call to business logic
     if not success:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Job not found")
+    embed_jobs(session)
     return {
         "success_status": success # sen the success status as the response
     }
