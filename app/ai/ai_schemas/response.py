@@ -21,3 +21,16 @@ class AssistantResponse(BaseModel):
     answer: str
     sources: List[SourceQuotation]
     confidence: float
+
+class JobMatch(BaseModel):
+    job_id: UUID
+    job_title: str
+    match_reason: str
+    confidence_score: float
+
+class RecommendationResponse(BaseModel):
+    matches: List[JobMatch]
+
+class AIRatingResponse(BaseModel):
+    confidence: float
+    reason: str
