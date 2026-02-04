@@ -9,6 +9,7 @@ from app.api.company import router as company_router
 from app.api.job import router as job_router
 from app.api.application import router as application_router
 from app.auth.routes import auth_router  
+from app.api.ai_routes import ai_router
 from fastapi import FastAPI
 from fastapi_pagination import add_pagination
 
@@ -24,6 +25,7 @@ app.include_router(company_router)
 app.include_router(job_router)
 app.include_router(application_router)
 app.include_router(auth_router)
+app.include_router(ai_router)
 
 # Enable pagination globally for supported endpoints
 add_pagination(app)
