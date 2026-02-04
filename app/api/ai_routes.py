@@ -9,6 +9,7 @@ import json
 from app.ai.ai_schemas.response import *
 from uuid import UUID, uuid4
 from app.ai.job_recommender.job_recommender import get_recs
+from app.ai.jd_improviser.improviser import get_improved_jd
 
 # router instance for the AI API endpoints.
 ai_router=APIRouter(prefix="/ai", tags=["AI-Assistant"])
@@ -19,7 +20,14 @@ def ai_assistance(session: Session = Depends(db_session_manager.get_session), cu
     response=generate_answer(retrieved_context, search_query)
     return response
 
-@ai_router.get("/job-recommendations", stastatus_code=status.HTTP_200_OK, response_model=RecommendationResponse)
+@ai_router.get("/job-recommendations", status_code=status.HTTP_200_OK, response_model=RecommendationResponse)
 def get_job_recs(resume_txt: str, current_user: User = Depends(get_current_user), session: Session = Depends(db_session_manager.get_session)):
     matches=get_recs(resume_text, session)
     return matches
+
+@ai_router.get("/improve-job-rec", status_code=status.HTTP_200_OK, response_model=ImprovementResponse)
+def get_improved_jd(request: ImprovementRequest, current_user: User = Depends(get_current_user), session: Session = Depends(db_session_manager.get_session)):
+    if not is_recruiter(current_user):
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Only recruiter can improve JD...")
+    improved_jd=get_improved_jd(request.mode, request.description, session)
+    return improved_jd

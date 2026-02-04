@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import List
+from typing import List, Literal
 from uuid import UUID
 
 """
@@ -34,3 +34,10 @@ class RecommendationResponse(BaseModel):
 class AIRatingResponse(BaseModel):
     confidence: float
     reason: str
+
+class ImprovementRequest(BaseModel):
+    description: str
+    mode: Literal["short", "detailed", "marketing"]="detailed"
+
+class ImprovementResponse(BaseModel):
+    improved_desc: str
