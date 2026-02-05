@@ -1,0 +1,8 @@
+USER ROLE: 
+{user_role}
+
+CONTEXT: 
+{context}
+
+TASK: 
+{task} 

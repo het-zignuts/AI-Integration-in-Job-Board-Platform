@@ -1,6 +1,7 @@
 from pydantic import BaseModel
-from typing import List, Literal
+from typing import List, Literal, Optional, Union, Any
 from uuid import UUID
+from app.core.enum import UserRole
 
 """
 This file defines the Pydantic schemas for responses sent by AI Assistant, used by langchain parser.
@@ -41,3 +42,29 @@ class ImprovementRequest(BaseModel):
 
 class ImprovementResponse(BaseModel):
     improved_desc: str
+
+class ApiCallInput(BaseModel):
+    endpoint: Literal["/jobs/", "/companies/"]
+    # params: dict
+
+class VectorSearchInput(BaseModel):
+    entity_type: Literal["job", "candidate_resume", "company"]
+    query: str
+    top_k: int=5
+
+class ReasoningInput(BaseModel):
+    task: str
+    context: dict
+
+class AgentResponse(BaseModel):
+    safety: Literal["allowed", "not_allowed"]
+    intent: str
+    action_type: Optional[Literal["api_call", "search_vector_db", "llm_reasoning_tool", "none"]]
+    action_input: Optional[Union[ApiCallInput, VectorSearchInput, ReasoningInput]]
+    state: Literal["CONTINUE", "FINAL"]
+    output: Optional[Any]
+
+class UserContext(BaseModel):
+    user_id: UUID
+    role: UserRole
+    access_token: str

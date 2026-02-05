@@ -6,7 +6,7 @@ from app.core.enum import UserRole
 from sqlalchemy import text
 from datetime import datetime
 
-def embed_jobs(session: Session):
+def embed_resumes(session: Session):
     users=session.exec(select(User).where(User.role==UserRole.CANDIDATE)).all()
     entity_type="candidate_resume"
     embed_model=get_embed_model()

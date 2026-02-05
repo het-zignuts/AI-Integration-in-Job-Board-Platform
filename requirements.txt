@@ -27,3 +27,4 @@ huggingface-hub<1.0.0
 sentence-transformers
 langchain-huggingface
 python-multipart
+requests

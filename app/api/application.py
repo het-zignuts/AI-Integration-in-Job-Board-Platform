@@ -20,6 +20,7 @@ from app.crud.application import *
 from app.crud.job import get_job_by_id
 from app.crud.company import get_company_by_id
 from app.core.config import Config
+from app.ai.embeddings.embed_resume import embed_resumes
 
 # router instance for the application API endpoints.
 router = APIRouter(prefix="/applications", tags=["Applications"])
@@ -59,7 +60,9 @@ def create_application_api(
         added_to_user= add_application_to_user(application.id, current_user.id, session) # link application to the user
         if not added_to_user:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Failed to link application to user")
+            embed_
         return application
+        embed_resumes(session)
     else:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Only candidate can create application...")
 

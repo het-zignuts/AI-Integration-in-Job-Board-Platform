@@ -25,6 +25,10 @@ from app.crud.company import *
 # HTTP Bearer Authentication Scheme (Authentication: Bearer <Token>)
 auth_header_scheme = HTTPBearer()
 
+def get_cred(session : Session = Depends(db_session_manager.get_session), creds: HTTPAuthorizationCredentials = Depends(auth_header_scheme)):
+    token=creds.credentials
+    return token
+
 # Retrieve the current user from decoding of JWT access token
 def get_current_user(session : Session = Depends(db_session_manager.get_session), creds: HTTPAuthorizationCredentials = Depends(auth_header_scheme)) -> User:
     try:

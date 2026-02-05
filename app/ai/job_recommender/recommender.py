@@ -6,8 +6,12 @@ from app.ai.ai_schemas.response import *
 from langchain_core.prompts import PromptTemplate
 import os
 from sqlmodel import Session, select, text
+from pathlib import Path
 
-with open("prompt.txt", "r") as file:
+BASE_DIR=Path(__file__).resolve().parent
+file_pth=BASE_DIR/"prompt.txt"
+
+with open(file_pth, "r") as file:
     template=file.read()
 
 llm=get_groq_llm()
@@ -17,10 +21,10 @@ chain=prompt | llm | parser
 
 question="Given the resume text and the job recommended based on that as context, please rate the job recommended with a confidence score and a shoe=rt 1-2 line reason."
 
-def get_recs(resume_text: str, session: Session):
+def get_recs(resume_text: str, session: Session, top_k: int = 3):
     embed_model=get_embed_model()
     embeddings=embed_model.embed_query(resume_text)
-    vector_literal = f"ARRAY[{','.join(map(str, query_vector))}]::vector"
+    vector_literal = f"ARRAY[{','.join(map(str, embeddings))}]::vector"
     query=f"""
     SELECT entity_type, entity_id, content
     FROM embeddings
@@ -30,7 +34,8 @@ def get_recs(resume_text: str, session: Session):
     """
     results=session.execute(text(query),{"query_vector": embeddings, "top_k": top_k}).all()
     matches=[]
-    for entity_id, content in results:
+    for entity_type, entity_id, content in results:
+        context=f"Entity Type: {entity_type}, \nEntity_ID: {entity_id} \nContent: {content}"
         job=session.get(Job, entity_id)
         llm_resp=chain.invoke({"context": context, "question": question})
         conf_scr=llm_resp.confidence
