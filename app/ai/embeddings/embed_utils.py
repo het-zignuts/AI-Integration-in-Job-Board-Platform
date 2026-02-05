@@ -8,9 +8,11 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 import re
 
 def get_embed_model():
+    """Return a HuggingFace embedding model for semantic vectors."""
     return HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
 
 def build_job_embedding_content(job: Job, company: Company) -> str:
+     """Create a text representation of a job + company for embedding."""
     content=f"""
             Job Title: {job.title}
             Company: {company.name}
@@ -24,6 +26,7 @@ def build_job_embedding_content(job: Job, company: Company) -> str:
     return content.strip()
 
 def build_company_embedding_content(company: Company) -> str:
+    """Create a text representation of a company for embedding."""
     content=f"""
             Company Name: {company.name}
             Domain: {company.domain}
@@ -34,6 +37,7 @@ def build_company_embedding_content(company: Company) -> str:
     return content.strip()
 
 def build_candidate_embedding_content(user: User, resume_txt) -> str:
+    """Create a text representation of a candidate resume for embedding."""
     content=f"""
             Candidate Username: {user.user_name}
             Role: {user.role.value}
